@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+  <rect id="svg-frame" x="10" y="10" width="280" height="180" fill="none" stroke="#888" stroke-width="2" />
+  <circle id="svg-a" class="unrevealed" cx="80" cy="100" r="50" fill="#5b8def" />
+  <rect id="svg-b" class="unrevealed" x="150" y="50" width="100" height="100" fill="#e8a33d" />
+  <text id="svg-c" class="unrevealed" x="150" y="185" font-size="18" text-anchor="middle" fill="#333">reveal はこの順で効く</text>
+</svg>

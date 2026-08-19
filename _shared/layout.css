@@ -1,0 +1,99 @@
+/* 言語に依存しない、レイアウト用のユーティリティクラス。
+   デッキ固有の frontmatter で `css: ... ../_shared/layout.css` のように読み込む。
+   このファイルは `slip` の中の座標系（画面基準の vh がそのままの比率で効かない、
+   ズーム倍率が親に対する幅で決まる、など）に依存した数値を含む。他のテーマや
+   dimension で使うときは実測し直すこと（about-mp4/CLAUDE.md の「slipshow のハマりどころ」参照）。 */
+
+/* 発表全体の表題。1 枚使って縦横の中央に大きく置く。章の見出しは対象にしない。
+   min-height: 145vh は 16:9 + default テーマでの実測値（78vh が画面の約半分になる比率から
+   1 画面ぶんを見積もったもの）。dimension を変えたら測り直す。 */
+.deck-title {
+  font-size: 2.6em;
+  line-height: 1.3;
+  min-height: 145vh;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* N 個の subslip を横に並べ、1 つずつ潜って見せるための段組。
+   各列は subslip なので、本編では縮んだ紙片として並び、入ると画面幅まで拡大される。
+   列の幅が本編に対するズーム倍率を決める（.columns-3 なら 1/3 なので約 3 倍）。 */
+.columns-2,
+.columns-3,
+.columns-4 {
+  display: flex;
+  gap: 1.2em;
+  align-items: flex-start;
+}
+
+.columns-2 > *,
+.columns-3 > *,
+.columns-4 > * {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 段組の中の subslip。俯瞰時に何の話か分かるよう、枠と地色で 1 枚のカードに見せる。 */
+.card {
+  background: #fafafa;
+  border: 1px solid #d4d4d4;
+  box-sizing: border-box;
+}
+
+/* 本筋から外れる寄り道を入れる subslip。
+   slipshow の enter は「その subslip を画面幅に合わせる」動作なので、ズームの倍率は
+   本編に対する subslip の幅で決まる。親と同じ幅だと 1 倍になり、潜った感じが出ない。
+   本編では小さな紙片として置き、入ったときに約 2.5 倍へ拡大されるようにする。 */
+.aside {
+  width: 40%;
+  margin: 0.5em auto;
+  background: #f6f4ef;
+  border: 1px solid #c8bda4;
+  border-left: 6px solid #c8bda4;
+  /* 内側の余白は subslip 自身の slip-body が持っている。ここで padding を足すと
+     二重になり、中の要素が右へはみ出す。枠と地色だけを与える。 */
+  box-sizing: border-box;
+}
+
+/* 寄り道の見出しラベル。subslip は縮小して置かれるので、本文と同じ比率だと
+   俯瞰時にほぼ読めない。本文より大きくして、何の脇道かを先に読ませる。 */
+.aside-label {
+  font-size: 1.2em;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  color: #8a7f66;
+  margin: 0 0 0.4em;
+}
+
+/* 複数の要素を見比べるための横並び。要素の行とキャプションの行に同じクラスを付け、
+   どちらも同じ比率で分割することで列の位置を揃える。動画に限らず画像・コード・表でも使える。 */
+.compare {
+  display: flex;
+  gap: 1.5em;
+  align-items: flex-start;
+}
+
+.compare > * {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.compare.caps > * {
+  text-align: center;
+  font-size: 0.7em;
+  line-height: 1.4;
+}
+
+/* 素材の帰属表示など、主役ではない小さな注記。
+   slipshow は pause 中の要素を opacity: 0 で隠すので、ここで opacity を指定すると
+   隠れるべき段階で表示されてしまう。控えめにするには色を薄くする。 */
+.credit {
+  font-size: 0.55em;
+  line-height: 1.4;
+  color: #6b6b6b;
+  margin-top: 0.3em;
+}

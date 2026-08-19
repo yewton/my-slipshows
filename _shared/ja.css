@@ -1,0 +1,133 @@
+/* 日本語で書かれたデッキに共通する調整。内容ではなく「日本語であること」に由来する分だけをここに置く。
+   デッキ固有の frontmatter で `css: ../_shared/ja.css ...` のように読み込む。
+   `@import` は使わない。slipshow は css: に列挙したファイルを HTML へインライン展開するため、
+   `@import` の相対パスは単体 HTML では解決できず壊れる。 */
+
+/* 組み込みテーマ（default / vanier）は body { font: 30px "Liberation Sans", sans-serif }
+   のみで、和文グリフを持たない。フォールバック先によっては句読点が中央に浮くので、
+   日本語フォントを明示的に指定する。和文は行間も少し広げた方が読みやすい。 */
+body {
+  font-family:
+    "Liberation Sans",
+    "Hiragino Sans",
+    "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP",
+    "Noto Sans CJK JP",
+    "Yu Gothic Medium",
+    "Yu Gothic",
+    "Meiryo",
+    sans-serif;
+  line-height: 1.7;
+}
+
+/* コードブロック内にも日本語のコメントが入るため、等幅側も指定する */
+pre,
+code,
+pre code {
+  font-family:
+    "Menlo",
+    "DejaVu Sans Mono",
+    "Courier New",
+    "Hiragino Sans",
+    "Noto Sans Mono CJK JP",
+    "Yu Gothic",
+    monospace;
+}
+
+/* 右下のステップ番号は body の行間を継ぐと枠が縦に伸びる。既定の詰まった見た目に戻す。 */
+#slipshow-counter {
+  line-height: 1.2;
+}
+
+/* 番号は 60px 固定なので、狭い画面では画面幅の 15% を占めて動画のコントロールに
+   かぶってしまう。スマホ幅では縮めて、右下を明け渡す。 */
+@media (max-width: 700px) {
+  #slipshow-counter {
+    font-size: 24px;
+    opacity: 0.65;
+  }
+}
+
+/* 番号をクリックすると開く目次。本文と同じ見出しサイズ（h1 60px / h2 45px）のまま
+   並ぶので、狭いパネルでは 1 項目が何行にも折り返す。一覧として読める大きさに落とす。 */
+#slipshow-toc h1 {
+  font-size: 1.1em;
+}
+
+#slipshow-toc h2 {
+  font-size: 0.9em;
+}
+
+#slipshow-toc {
+  line-height: 1.4;
+}
+
+@media (max-width: 700px) {
+  #slipshow-toc h1 {
+    font-size: 0.8em;
+  }
+
+  #slipshow-toc h2 {
+    font-size: 0.65em;
+  }
+}
+
+/* 組み込みテーマの箱ラベル（.definition や .theorem の :before）は英語で埋め込まれている
+   （default テーマの src/themes/default.css 参照）。content プロパティなので通常の
+   上書きでは効かず、セレクタごと書き直す必要がある。title 付きのときはテーマ側が
+   "Definition (" attr(title) ") " のように括弧まで組み立てているので、それも和文に直す。 */
+.block[title]:before {
+  content: "" attr(title) "";
+}
+
+.theorem:before {
+  content: "定理";
+}
+.theorem[title]:before {
+  content: "定理（" attr(title) "）";
+}
+
+.lemma:before {
+  content: "補題";
+}
+.lemma[title]:before {
+  content: "補題（" attr(title) "）";
+}
+
+.definition:before {
+  content: "定義";
+}
+.definition[title]:before {
+  content: "定義（" attr(title) "）";
+}
+
+.example:before {
+  content: "例";
+}
+.example[title]:before {
+  content: "例（" attr(title) "）";
+}
+
+.corollary:before {
+  content: "系";
+}
+.corollary[title]:before {
+  content: "系（" attr(title) "）";
+}
+
+.remark:before {
+  content: "注";
+}
+.remark[title]:before {
+  content: "注（" attr(title) "）";
+}
+
+.proof:before {
+  content: "証明．";
+}
+
+/* テーマは theorem と lemma を斜体にしているが、和文は合成斜体になって読みにくいので戻す。 */
+.theorem,
+.lemma {
+  font-style: normal;
+}
