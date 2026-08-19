@@ -107,6 +107,19 @@ CSS・画像・動画（base64 data URI）・MathJax・highlight.js・slipshow �
 - `slipshow serve` は 127.0.0.1 固定で bind オプションがない。tailnet に見せるには `tailscale serve --bg --http=8080 http://127.0.0.1:8080`（解除は `tailscale serve --http=8080 off`）。
 - developer.apple.com の仕様書は JS 描画なので WebFetch では空が返る。ブラウザで開けば読める。
 
+## GitHub Pages への公開
+
+`main` への push で `.github/workflows/deploy.yml` が自動デプロイする。公開先は
+https://yewton.github.io/my-slipshows/ 、デッキごとの URL は `<公開先>/<デッキ名>/`。
+
+- デッキを追加したら `site/index.html` の一覧にリンクを足すこと。デッキの検出自体は
+  `*/main.md` のグロブなので CI 側の変更は不要。
+- CI は compile の出力が 1 バイトでもあれば失敗させる。「ビルドの落とし穴」節の通り
+  参照先の欠落は warning のみで終了コード 0 になるため、`-q` でも消えないこの warning を
+  出力の有無で検知している（成功時の compile は完全に無出力なことを確認済み）。
+- リリース tar（`slipshow-linux-x86_64.tar`）の中身はトップレベルの `bin/slipshow` のみ。
+  ローカルの `~/opt/slipshow-linux-x86_64/bin/slipshow` のような中間ディレクトリは無い。
+
 ## 構文リファレンス
 
 Markdown 拡張構文（`{pause}` `{step}` `{slip}` `{.block}` や属性記法）は上流ドキュメントを参照する。CLAUDE.md には転記しない。v0.11.0 に固定した URL：

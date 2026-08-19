@@ -1,0 +1,102 @@
+name: Deploy decks to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# デプロイ同士は直列化する。走行中のものを打ち切ると Pages が中途半端な状態で残りうる。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      SLIPSHOW_VERSION: v0.11.0
+      SLIPSHOW_SHA256: b32ed577d384813de55360eadece0eda26e781bf7efbf5d6a592df3558678e9e
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+        with:
+          # リポジトリ側で Pages が未設定でも、このワークフローから有効化する。
+          enablement: true
+
+      - id: cache-slipshow
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.local/bin/slipshow
+          key: slipshow-${{ env.SLIPSHOW_VERSION }}-linux-x86_64
+
+      - name: Install slipshow
+        if: steps.cache-slipshow.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL -o /tmp/slipshow.tar \
+            "https://github.com/panglesd/slipshow/releases/download/${SLIPSHOW_VERSION}/slipshow-linux-x86_64.tar"
+          echo "${SLIPSHOW_SHA256}  /tmp/slipshow.tar" | sha256sum -c -
+          # tar の中身はトップレベルの bin/slipshow ひとつだけ。作業ツリーを汚さないよう /tmp で展開する。
+          mkdir -p /tmp/slipshow-extract "$HOME/.local/bin"
+          tar -xf /tmp/slipshow.tar -C /tmp/slipshow-extract
+          install -m 0755 /tmp/slipshow-extract/bin/slipshow "$HOME/.local/bin/slipshow"
+
+      # cache hit のときも通る必要があるので、Install とは別のステップに置く。
+      - name: Add slipshow to PATH
+        run: echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Compile decks
+        run: |
+          # デッキ = main.md を持つ直下のディレクトリ。_shared/ と site/ は main.md を
+          # 持たないので自然に外れる。デッキ一覧を CI 側に書かずに済むよう、この形を保つこと。
+          shopt -s nullglob
+          decks=(*/main.md)
+          if [ "${#decks[@]}" -eq 0 ]; then
+            echo "::error::main.md を持つディレクトリが 1 つも見つからない"
+            exit 1
+          fi
+
+          mkdir -p dist
+          cp site/index.html dist/index.html
+
+          status=0
+          for md in "${decks[@]}"; do
+            deck=$(dirname "$md")
+            mkdir -p "dist/$deck"
+            # slipshow は参照先の画像・動画が無くても warning を出すだけで終了コード 0 を返す
+            # （生成物は src の無い <video> / <img> を抱えたまま黙って壊れる）。
+            # 成功時の出力は完全に空になるので、何か出たら失敗として扱う。warning は stdout 側に出る。
+            if ! out=$(slipshow compile "$md" -o "dist/$deck/index.html" 2>&1); then
+              printf '%s\n' "$out"
+              echo "::error::$deck: slipshow compile が失敗した"
+              status=1
+              continue
+            fi
+            if [ -n "$out" ]; then
+              printf '%s\n' "$out"
+              echo "::error::$deck: slipshow が出力を出した（参照先の欠落による warning の可能性）"
+              status=1
+              continue
+            fi
+            echo "$deck -> dist/$deck/index.html"
+          done
+          exit "$status"
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0

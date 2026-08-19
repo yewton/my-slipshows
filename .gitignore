@@ -1,2 +1,3 @@
-# slipshow compile の生成物。.md から常に再生成できるため追跡しない。
-*.html
+# slipshow compile の生成物。入口が main.md 固定なので生成物は必ず main.html になる。
+# .md から常に再生成できるため追跡しない。
+main.html

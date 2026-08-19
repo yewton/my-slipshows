@@ -1,0 +1,191 @@
+<!doctype html>
+<!--
+  デッキ一覧のランディングページ。GitHub Actions がこのファイルを dist/index.html にそのまま
+  コピーし、各デッキを dist/<デッキ名>/index.html にコンパイルする（.github/workflows/deploy.yml）。
+  ビルド工程を挟まずに済むよう、スタイルは外部ファイルに分けずここへ直接書いている。
+  デッキを追加したら、このファイルの <ul class="decks"> に項目を足す。
+-->
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>my-slipshows — プレゼン資料</title>
+    <meta name="description" content="slipshow で作ったプレゼン資料の一覧" />
+    <style>
+      /* 組み込みテーマと同じ理由で、和文グリフを持つフォントを明示する（_shared/ja.css 参照）。
+         フォールバック任せにすると句読点が中央に浮くことがある。 */
+      :root {
+        --bg: #fbfbfa;
+        --fg: #1c1c1a;
+        --muted: #61615c;
+        --line: #e0e0da;
+        --card: #ffffff;
+        --accent: #2f6f4f;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #16171a;
+          --fg: #e8e8e4;
+          --muted: #9a9a94;
+          --line: #2c2e33;
+          --card: #1e2024;
+          --accent: #7fc4a0;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 4rem 1.5rem 5rem;
+        background: var(--bg);
+        color: var(--fg);
+        line-height: 1.8;
+        font-family:
+          "Liberation Sans",
+          "Hiragino Sans",
+          "Hiragino Kaku Gothic ProN",
+          "Noto Sans JP",
+          "Noto Sans CJK JP",
+          "Yu Gothic Medium",
+          "Yu Gothic",
+          "Meiryo",
+          sans-serif;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      main {
+        max-width: 46rem;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 0.4rem;
+        font-size: 2rem;
+        line-height: 1.4;
+        letter-spacing: 0.01em;
+      }
+
+      .lead {
+        margin: 0 0 3rem;
+        color: var(--muted);
+        font-size: 0.95rem;
+      }
+
+      .lead a {
+        color: inherit;
+      }
+
+      ul.decks {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 1rem;
+      }
+
+      ul.decks a {
+        display: block;
+        padding: 1.4rem 1.6rem;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--card);
+        color: inherit;
+        text-decoration: none;
+        transition:
+          border-color 0.15s ease,
+          transform 0.15s ease;
+      }
+
+      ul.decks a:hover,
+      ul.decks a:focus-visible {
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      ul.decks h2 {
+        margin: 0 0 0.3rem;
+        font-size: 1.2rem;
+        line-height: 1.5;
+      }
+
+      ul.decks p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.92rem;
+      }
+
+      ul.decks code {
+        font-size: 0.85em;
+        color: var(--muted);
+        font-family:
+          "Menlo",
+          "DejaVu Sans Mono",
+          "Courier New",
+          monospace;
+      }
+
+      footer {
+        margin-top: 3.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.85rem;
+      }
+
+      footer a {
+        color: var(--accent);
+      }
+
+      footer p {
+        margin: 0.4rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>my-slipshows</h1>
+      <p class="lead">
+        <a href="https://github.com/panglesd/slipshow">slipshow</a> で作ったプレゼン資料です。
+        矢印キーまたはクリックで進みます。右下の番号を押すと目次が開きます。
+      </p>
+
+      <ul class="decks">
+        <li>
+          <a href="about-mp4/">
+            <h2>バイナリを触って学ぶ MP4</h2>
+            <p>
+              MP4 は「箱」の入れ子でしかない、という話。映像データ（<code>mdat</code>）を
+              1 バイトも変えないまま、向きと再生速度をバイナリ書き換えだけで変えてみせます。
+              そして、箱のサイズを変えた瞬間に壊れる理由まで。
+            </p>
+          </a>
+        </li>
+        <li>
+          <a href="showcase/">
+            <h2>slipshow ショーケース</h2>
+            <p>
+              slipshow v0.11.0 "Brazlip" の構文とアクションを、実物を動かしながら引くための
+              リファレンスです。ステップ・画面移動・箱・数式・メディアなどを一通り収録しています。
+            </p>
+          </a>
+        </li>
+      </ul>
+
+      <footer>
+        <p>
+          ソースは <a href="https://github.com/yewton/my-slipshows">github.com/yewton/my-slipshows</a>
+          にあります。<code>main</code> への push で自動的にビルドし直されます。
+        </p>
+        <p>
+          「バイナリを触って学ぶ MP4」のデモ映像は
+          <a href="https://peach.blender.org"><i>Big Buck Bunny</i></a>
+          （© 2008 Blender Foundation, CC BY 3.0）を素材にしています。
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>
