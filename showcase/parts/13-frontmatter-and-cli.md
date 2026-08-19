@@ -83,5 +83,3 @@ compile の出力に warning が無いことを毎回目で確認する。
 {.block title="serve は静的ファイルを配信しない" pause scroll}
 `slipshow serve` はホットリロード用の専用経路で本文を配る。素の `<video src="demo.mp4">` を
 `serve` で開くと 404 になる（`compile` した HTML を直接開けば見える）。
-
-{pause up}

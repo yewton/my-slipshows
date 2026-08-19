@@ -117,5 +117,3 @@ subslip から抜ける（`exit`）タイミングを独立させたいときに
 
 {.remark pause scroll}
 `center` と `reveal` が同時に発火した。ステップ数を節約したいときに使う。
-
-{pause up}

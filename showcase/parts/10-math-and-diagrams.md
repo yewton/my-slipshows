@@ -64,7 +64,7 @@ $$ S = \cssId{eq-pause1}{1 + 2} + \cdots + \cssId{eq-pause2}{100} $$
 ```` ```=mermaid ```` フェンスで書く。
 
 {pause scroll}
-```markdown
+````markdown
 ``` =mermaid
 graph TD;
     A-->B;
@@ -72,7 +72,7 @@ graph TD;
     B-->D;
     C-->D;
 ```
-```
+````
 
 {pause scroll}
 ``` =mermaid
@@ -95,5 +95,3 @@ graph TD;
 
 {.block title="Manim" pause scroll}
 `manim` コマンドで書き出した `.mp4` をそのまま動画として取り込む（9 章の動画埋め込みと同じ）。
-
-{pause up}

@@ -67,5 +67,3 @@
 {pause emph=target}
 
 {pause unemph=target}
-
-{pause up}

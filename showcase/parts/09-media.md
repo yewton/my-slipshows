@@ -104,5 +104,3 @@ SVG は Markdown 同様、内側の要素に `id` / `class` を持たせられ�
 
 このデッキには収録していない（録画データが必要なため）。手順は上流ドキュメントの
 `record-and-replay.rst` と `record-tutorial.rst` を参照。
-
-{pause up}

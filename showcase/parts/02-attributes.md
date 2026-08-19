@@ -106,5 +106,3 @@ Some text
 
 Some other text
 ```
-
-{pause up}

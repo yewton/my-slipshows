@@ -61,7 +61,7 @@ ___
 ## 表とコード
 
 {pause scroll}
-```markdown
+````markdown
 | foo | bar |
 | --- | --- |
 | baz | bim |
@@ -71,7 +71,7 @@ ___
 ```ocaml
 let salut = "hello"
 ```
-```
+````
 
 {pause scroll}
 | foo | bar |
@@ -127,5 +127,3 @@ Title
 =====
 ```
 という書き方（アンダーラインで見出しを作る記法）は使えない。`#` の ATX 見出しのみ。
-
-{pause up}

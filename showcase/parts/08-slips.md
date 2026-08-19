@@ -124,5 +124,3 @@ subslip の拡大率は「本編の中でその subslip が占める幅」の逆
 > 潜った先の内容 C。
 >
 > {step}
-
-{pause up}

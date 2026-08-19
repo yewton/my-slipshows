@@ -10,7 +10,7 @@
 ## 基本形
 
 {pause scroll}
-```markdown
+````markdown
 {#script-target}
 Hello World!
 
@@ -18,7 +18,7 @@ Hello World!
 ```slip-script
 document.querySelector("#script-target").style.background = "red"
 ```
-```
+````
 
 {pause scroll}
 {#script-target style="display:inline-block; padding:0.3em 0.6em"}
@@ -40,14 +40,13 @@ document.querySelector("#script-target").style.background = "#ffd27a"
 変更すると、slipshow が「戻すときの操作」を自動的に記録する。
 
 {pause scroll}
-```markdown
+````markdown
 {exec}
 ```slip-script
 slip.setStyle(document.querySelector("#script-target"), "background", "#a9e5a0")
 ```
-```
+````
 
-{pause scroll}
 {pause exec}
 ```slip-script
 slip.setStyle(document.querySelector("#script-target"), "background", "#a9e5a0")
@@ -64,7 +63,7 @@ API がカバーしない副作用（テキストの書き換えなど）は、`
 `slip.onUndo(callback)` で自分の undo 手続きを登録する。
 
 {pause scroll}
-```markdown
+````markdown
 {exec}
 ```slip-script
 let e = document.querySelector("#script-target");
@@ -72,6 +71,4 @@ let old = e.innerText;
 e.innerText = "書き換えた";
 slip.onUndo(() => { e.innerText = old });
 ```
-```
-
-{pause up}
+````

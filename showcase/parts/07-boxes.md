@@ -68,5 +68,3 @@
 {.remark pause scroll}
 `title` の有無でラベルの組み立て方が変わる（`title` 付きは「ラベル（タイトル）」の形）。
 `_shared/ja.css` は両方のセレクタを上書きしている。
-
-{pause up}
