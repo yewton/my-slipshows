@@ -18,7 +18,7 @@ slipshow（v0.11.0 "Brazlip"）の構文とアクションを、実物を動か�
 自分用リファレンス。`about-mp4/` で実際に使った機能に加えて、上流ドキュメントを読んで
 見つけた機能も収録する。
 
-{pause up}
+{pause center}
 
 {.deck-title}
 # slipshow ショーケース

@@ -92,7 +92,7 @@ $ diff -U1 --label before.mp4 --label after.mp4 <(xxd before.mp4) <(xxd after.mp
 映像データ（`mdat`）は 48,636 バイトまるごと、**1 バイトも変わっていません**。
 今日の話は、この 3 箇所が何なのかの説明でしかありません。
 
-{pause up}
+{pause center}
 
 {.deck-title}
 # バイナリを触って学ぶ MP4

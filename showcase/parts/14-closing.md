@@ -39,7 +39,7 @@ highlightjs-theme: github-dark
 > - テーマ — <https://github.com/panglesd/slipshow/blob/v0.11.0/docs/themes.rst>
 > - 発表機能（スピーカービュー・録画・ショートカット） — <https://github.com/panglesd/slipshow/tree/v0.11.0/docs>
 
-{pause up}
+{pause center}
 
 {.deck-title}
 # おわり

@@ -39,15 +39,6 @@ pre code {
   line-height: 1.2;
 }
 
-/* 番号は 60px 固定なので、狭い画面では画面幅の 15% を占めて動画のコントロールに
-   かぶってしまう。スマホ幅では縮めて、右下を明け渡す。 */
-@media (max-width: 700px) {
-  #slipshow-counter {
-    font-size: 24px;
-    opacity: 0.65;
-  }
-}
-
 /* 番号をクリックすると開く目次。本文と同じ見出しサイズ（h1 60px / h2 45px）のまま
    並ぶので、狭いパネルでは 1 項目が何行にも折り返す。一覧として読める大きさに落とす。 */
 #slipshow-toc h1 {
@@ -62,20 +53,11 @@ pre code {
   line-height: 1.4;
 }
 
-@media (max-width: 700px) {
-  #slipshow-toc h1 {
-    font-size: 0.8em;
-  }
-
-  #slipshow-toc h2 {
-    font-size: 0.65em;
-  }
-}
-
 /* 組み込みテーマの箱ラベル（.definition や .theorem の :before）は英語で埋め込まれている
    （default テーマの src/themes/default.css 参照）。content プロパティなので通常の
    上書きでは効かず、セレクタごと書き直す必要がある。title 付きのときはテーマ側が
-   "Definition (" attr(title) ") " のように括弧まで組み立てているので、それも和文に直す。 */
+   "Definition (" attr(title) ") " のように括弧まで組み立てているので、それも和文に直す。
+   ここでは英語ラベルと括弧を落とし、title だけを残す（ラベルの和訳は下の各クラスが個別に持つ）。 */
 .block[title]:before {
   content: "" attr(title) "";
 }
