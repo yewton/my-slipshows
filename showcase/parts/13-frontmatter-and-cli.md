@@ -51,6 +51,7 @@ toplevel-attributes: {}
 続きの内容
 ```
 
+{pause scroll}
 `{pause}` などステップ機構はスライド形式でもそのまま使える。
 
 {pause up}

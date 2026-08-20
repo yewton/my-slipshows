@@ -59,20 +59,20 @@ E
 ```
 
 {pause scroll}
-A
-
-{pause-block}
-> B
+> A
 >
-> {pause}
+> {pause-block}
+> > B
+> >
+> > {pause}
+> >
+> > C
+> >
+> > {pause}
+> >
+> > D
 >
-> C
->
-> {pause}
->
-> D
-
-E
+> E
 
 {.remark pause scroll}
 E は `pause-block` の外なので、B・C・D の pause に関係なく最初から見えている。

@@ -24,7 +24,10 @@
 
 {.lemma}
 補助的な主張。
+```
 
+{pause scroll}
+```markdown
 {.corollary}
 定理から直ちに従うもの。
 
@@ -39,31 +42,32 @@
 ```
 
 {pause scroll}
-{.block title="任意のタイトル"}
-規則性のない、汎用の箱。
-
-{.definition title="コーデック"}
-映像や音声そのものをどう圧縮するかを決めた規格。
-
-{.theorem title="Fundamental theorem of definition"}
-定義は面白い。
-
-{.lemma}
-補助的な主張。
-
-{.corollary}
-定理から直ちに従うもの。
-
-{.example}
-具体例。
-
-{.remark}
-補足。
-
-{.proof}
-> 仮に面白くないとする。
+> {.block title="任意のタイトル"}
+> 規則性のない、汎用の箱。
 >
-> すると証明を持たないことになる。
+> {.definition title="コーデック"}
+> 映像や音声そのものをどう圧縮するかを決めた規格。
+>
+> {.theorem title="Fundamental theorem of definition"}
+> 定義は面白い。
+>
+> {.lemma}
+> 補助的な主張。
+
+{pause scroll}
+> {.corollary}
+> 定理から直ちに従うもの。
+>
+> {.example}
+> 具体例。
+>
+> {.remark}
+> 補足。
+>
+> {.proof}
+> > 仮に面白くないとする。
+> >
+> > すると証明を持たないことになる。
 
 {.remark pause scroll}
 `title` の有無でラベルの組み立て方が変わる（`title` 付きは「ラベル（タイトル）」の形）。
