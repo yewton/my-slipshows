@@ -48,7 +48,9 @@
 ## emph / unemph
 
 上流の `actions-api.rst` には載っていないが、`src/actions-arguments/actions_arguments.ml` と
-`slip` API（カスタムスクリプト用、11 章）に実在する。要素を強調する（既定テーマでは背景色）。
+`slip` API（カスタムスクリプト用、11 章）に実在する。`emph` は対象に `emphasized` クラスを
+付けるだけで、既定テーマはこのクラスにスタイルを持たない。見た目を変えるには自分で CSS を書く。
+このデッキでは `_shared/layout.css` が背景色を定義している。
 
 {pause scroll}
 ```markdown

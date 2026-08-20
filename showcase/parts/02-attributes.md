@@ -56,7 +56,7 @@
 
 ## 参照属性
 
-同じ属性を何度も書くのはつらいので、footnote 風に外出しできる。
+同じ属性を何度も書くのはつらいので、footnote 風に外出しできる記法。
 
 {pause scroll}
 ```markdown
@@ -65,10 +65,10 @@
 [A]: {style="color:#5b8def; font-weight:bold"}
 ```
 
-{pause scroll}
-[text][A] [with][A] [many][A] [words][A].
-
-[A]: {style="color:#5b8def; font-weight:bold"}
+{.remark pause scroll}
+記法自体は上流ドキュメント（`attributes-ref.rst`）に載っている。ただし v0.11.0 では解決されず、
+`[text][A]` などの参照箇所に属性が付かない。生成 HTML に `<!-- Undefined label a -->` という
+コメントが残るのが唯一の手掛かりで、警告も出ず終了コード 0 なので、コンパイル結果を見ても気付けない。
 
 {pause up}
 

@@ -96,3 +96,9 @@
   color: #6b6b6b;
   margin-top: 0.3em;
 }
+
+/* `emph` アクションは対象に `emphasized` クラスを付けるだけで、既定テーマはこのクラスに
+   スタイルを持たない。全デッキで使う強調スタイルをここで定義する。背景色だけの控えめな強調。 */
+.emphasized {
+  background-color: #fff3b0;
+}

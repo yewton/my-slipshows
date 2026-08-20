@@ -79,6 +79,8 @@ CSS・画像・動画（base64 data URI）・MathJax・highlight.js・slipshow �
 - **`serve` は静的ファイルを配信しない。** `demo/x.mp4` は 404。素の `<video src="...">` は base64 埋め込みを避けられるが serve では見えない（compile 後に直接開けば見える）。
 - **`serve` のルートは殻ページで、デッキ本文は別経路（polling）で届く。** `curl http://127.0.0.1:8080/` の中身に本文は無いため、反映の確認を curl で行うと「変わっていない」と誤判定する。ブラウザで見ること。`{include}` 先の部分ファイルを編集してもホットリロードは効く。
 - **テーマの UI は body のスタイルを継承する。** `body { line-height }` が `#slipshow-counter` の枠を縦に伸ばすので line-height を個別に戻す。`#slipshow-toc` は本文と同じ見出しサイズのままだと日本語の項目が折り返して読めないので、font-size を個別に縮める。
+- **参照属性（`[text][A]` / `[A]: {...}`）は v0.11.0 では解決されない。** 警告も終了コードも出ず、生成 HTML に `<!-- Undefined label ... -->` が残るだけなので、コンパイル出力では検知できない。
+- **`emph` は対象に `emphasized` クラスを付けるだけで、既定テーマにスタイルが無い。** 見た目を変えるには自分で CSS を書く（`_shared/layout.css` が背景色を定義済み）。
 
 ## ステップの機構（ソースで確認済み）
 
