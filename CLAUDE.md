@@ -22,10 +22,7 @@ css: ../_shared/ja.css ../_shared/layout.css style.css
 
 ## slipshow CLI
 
-パッケージマネージャ管理ではなく、単体バイナリを PATH に置いている：
-`~/bin/slipshow` → `~/opt/slipshow-linux-x86_64/bin/slipshow`
-
-`slipshow --version` は `%%VERSION%%: Brazlip` を返す（バージョン文字列が展開されていないリリースビルド）。数値バージョンを取る手段がないので、コードネーム `Brazlip` = v0.11.0 が唯一の手掛かり。
+リリースバイナリの `slipshow --version` は `%%VERSION%%: Brazlip` を返す（バージョン文字列が展開されていないリリースビルド）。数値バージョンを取る手段がないので、コードネーム `Brazlip` = v0.11.0 が唯一の手掛かり。
 
 ```bash
 slipshow serve about-mp4/main.md      # ホットリロード付きプレビュー（既定 :8080、-p で変更）
@@ -105,8 +102,8 @@ CSS・画像・動画（base64 data URI）・MathJax・highlight.js・slipshow �
 
 ## ツールと公開
 
-- Bento4 1.6.0-641 を `~/.local/share/bento4/` に置き、`~/.local/bin` から `mp4dump` `mp4info` `mp4edit` `mp4extract` を symlink している。`mp4dump --verbosity 2` で stco のエントリ値まで出る。
-- `slipshow serve` は 127.0.0.1 固定で bind オプションがない。tailnet に見せるには `tailscale serve --bg --http=8080 http://127.0.0.1:8080`（解除は `tailscale serve --http=8080 off`）。
+- Bento4 の `mp4dump --verbosity 2` で stco のエントリ値まで出る。
+- `slipshow serve` は 127.0.0.1 固定で bind オプションがない。
 - developer.apple.com の仕様書は JS 描画なので WebFetch では空が返る。ブラウザで開けば読める。
 
 ## GitHub Pages への公開
@@ -119,8 +116,8 @@ https://yewton.github.io/my-slipshows/ 、デッキごとの URL は `<公開先
 - CI は compile の出力が 1 バイトでもあれば失敗させる。「ビルドの落とし穴」節の通り
   参照先の欠落は warning のみで終了コード 0 になるため、`-q` でも消えないこの warning を
   出力の有無で検知している（成功時の compile は完全に無出力なことを確認済み）。
-- リリース tar（`slipshow-linux-x86_64.tar`）の中身はトップレベルの `bin/slipshow` のみ。
-  ローカルの `~/opt/slipshow-linux-x86_64/bin/slipshow` のような中間ディレクトリは無い。
+- リリース tar（`slipshow-linux-x86_64.tar`）の中身はトップレベルの `bin/slipshow` のみで、
+  中間ディレクトリは無い。
 
 ## 構文リファレンス
 
