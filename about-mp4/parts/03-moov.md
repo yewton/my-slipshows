@@ -13,7 +13,7 @@
 `mdat` の**どこに何があるか**を書いた索引。今日いじるのは全部この中。
 
 {.block pause scroll}
-`mdat` が本、`moov` が目次。これだけ押さえれば迷いません。
+`mdat` が中身で`moov` は目次。これだけ押さえよう。
 
 {.remark pause scroll}
 4 文字の type は英語の短縮です。読み方は MP4RA の登録簿に載っていて、
@@ -43,16 +43,7 @@ moov  movie                 ムービー全体
 ```
 
 {.remark pause scroll}
-`st` で始まる 5 つは、どれも `stbl`（sample table）の子です。
-名前を眺めるだけで、どれが何の表なのかは大体わかります。
-
-{.remark pause scroll}
-`edts` は今日は触りませんが、手元で辿るときは注意してください。
-`tkhd` の次は `mdia` ではなく `edts` です（このファイルでは 36 バイト）。
-これを飛ばすと、以降のオフセットが全部ずれます。
-
-{.remark pause scroll}
-★ の 3 つだけ覚えてください。この後のデモで全部使います。
+今回は ★ の 3 つだけ扱います。
 
 {pause up}
 

@@ -35,14 +35,12 @@ ISO Base Media File Format  (ISO/IEC 14496-12)
 
 ## この資料の出典
 
-一次規格の **ISO/IEC 14496-12 は有償**です（2026 年版で国内価格は税込 5 万円程度）。
+一次規格の **ISO/IEC 14496-12 は有償**です（2026 年版で国内価格は税込 5 万円程度 💸）
+
+流石に買うのは厳しかったので…
 
 {.block title="根拠にしたもの" pause scroll}
 > - Apple QuickTime File Format Specification（無償公開）
 > - MP4RA：box type の公式登録簿（無償）
 > - mp4box.js / Bento4 / FFmpeg の実装
 > - **実ファイルでの検証**
-
-{.remark pause scroll}
-今日の話は、全部その場で確かめられます。
-手元の mp4 と `xxd` があれば、同じことを追体験できます。
