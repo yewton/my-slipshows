@@ -3,14 +3,14 @@
 {#part4-title}
 # 4. tkhd と変換行列
 
-## トラックのヘッダを開く
+## tkhd
 
 `trak` > `tkhd`。トラック 1 本の「外側」を決める box です。
 FullBox なので、payload は `version(1) + flags(3)` から始まります。
 
 {pause scroll}
 ```text
-$ xxd -s 24111 -l 96 sample.mp4
+$ xxd -s 24111 -l 96 00-original.mp4
 00005e2f: 0000 005c 746b 6864 0000 0003 0000 0000  ...\tkhd........
 00005e3f: 0000 0000 0000 0001 0000 0000 0000 1388  ................
 00005e4f: 0000 0000 0000 0000 0000 0000 0000 0000  ................
@@ -21,7 +21,7 @@ $ xxd -s 24111 -l 96 sample.mp4
 
 {pause up}
 
-## 何が並んでいるか
+## tkhd の中身
 
 ```text
 +0   version(1) + flags(3)   00 00 00 03   ← enabled + in_movie
@@ -41,13 +41,13 @@ $ xxd -s 24111 -l 96 sample.mp4
 ```
 
 {.remark pause scroll}
-`width` の生の値は `0x01400000` = 20,971,520。表示は 320 です。
-**65536 で割ると 320.0** になります。整数を 65536 で割って小数を表す形式、
-つまり固定小数点で入っています。
+> `width` の生の値は `0x01400000` = 20,971,520。でも表示は 320 です。
+>
+> **65536 で割ると 320.0** になります。固定小数点で入っているんですね。
 
 {pause up}
 
-## 格納形式は固定小数点
+## 固定小数点
 
 {.definition title="16.16 形式"}
 32 ビットのうち上位 16 ビットが整数部、下位 16 ビットが小数部。
@@ -61,14 +61,14 @@ $ xxd -s 24111 -l 96 sample.mp4
 ```
 
 {.remark pause scroll}
-`0x40000000` は `0b01.000...0`。1.0 の書き方が 2 種類あるのは、
-**小数点の位置が違うだけ**です。行列の中で 2 つの形式が混ざります。
+`0x40000000` は `0b01.000...0`。小数点の位置が違うだけです。
+行列の中には、この 2 つの形式が混ざっています。
 
 {pause up}
 
-## 行列の 36 バイト
+## matrix
 
-先ほどの `+40` から 36 バイト。4 バイト × 9 個です。
+`+40` から 36 バイト。4 バイト × 9 個です。
 xxd の 1 行がちょうど 4 個ぶんなので、3 行に収まります。
 
 {pause scroll}
@@ -90,11 +90,11 @@ xxd の 1 行がちょうど 4 個ぶんなので、3 行に収まります。
 
 {.block pause scroll}
 **単位行列**、つまり「何もしない」が入っています。
-ではこれを **180 度回転**にするには、どこをいくつにすればよいでしょうか。
+では **180 度回転**させるには、どこをいくつにすればよいでしょう？
 
 {pause up}
 
-## そもそも何を計算しているのか
+## 何を計算しているのか
 
 この 9 個は、表示するときに座標をどう変換するかの指定です。
 
@@ -108,7 +108,7 @@ xxd の 1 行がちょうど 4 個ぶんなので、3 行に収まります。
 ```
 
 {pause scroll}
-展開すると、覚えるのはこの 3 行だけです。
+展開するとこうなります。
 
 - $x' = a x + c y + t_x$
 - $y' = b x + d y + t_y$
@@ -127,88 +127,85 @@ xxd の 1 行がちょうど 4 個ぶんなので、3 行に収まります。
 > - $u\ v\ w$ … 遠近法。動画では使わず $0, 0, 1$ 固定
 
 {.remark pause scroll}
-2 行 2 列だと拡大と回転しかできません。**平行移動が掛け算では作れない**からです。
-そこで座標に常に `1` をくっつけておくと、$t_x \times 1 = t_x$ として足し込めます。
-平行移動も掛け算 1 回で書けるようにするための細工、それだけです（同次座標）。
+> 2 行 2 列だと拡大と回転しかできません。平行移動は掛け算では作れないからです。
+>
+> そこで座標に常に `1` をくっつけておくと、$t_x \times 1 = t_x$ として足し込めます（同次座標）。
 
 {pause}
 
-ところで、その平行移動は**手元のどのプレイヤーでも効きません**。
+ところで、この平行移動、**手元のどのプレイヤーでも効きませんでした**。
 
 {slip .aside pause}
-> {.aside-label}
-> 余談
->
-> ## 仕様にあるのに、誰も使わない
->
-> $t_x$ と $t_y$ を書き換えても、画は 1 ピクセルも動きません。
-> ffmpeg もブラウザも、値を読んだうえで捨てています。
->
-> {pause scroll}
-> ではなぜ仕様にあるのか。祖先の QuickTime にさかのぼると、用途が書いてあります。
->
-> {.definition title="QuickTime File Format Specification, Matrices" pause scroll}
-> "QuickTime files use matrices to describe spatial information about **many objects**,
-> such as tracks within a movie."
->
-> {pause scroll}
-> `tkhd` の他のフィールドも同じ方を向いています。
->
-> - **layer** … "this track's **spatial priority** in its movie"。重ね順
-> - **alternate group** … 互いに代替となるトラックの組
-> - `matt` … トラックの画像をブレンドする box
-> - `clip` … クリッピング領域を指定する box
->
-> {.remark pause up}
-> 字幕を右下に置く、小窓を重ねる。MP4 の器は元々そういう 2D 合成のための道具立てで、
-> その世界では各トラックを「どこに」置くかが要ります。平行移動はそのためにありました。
->
-> {pause up}
->
-> ## QuickTime では実際に使われていた
->
-> 同じ仕様書に、平行移動を主役にした機能が 2 つ載っています。
->
-> {.definition title="スプライト" pause scroll}
-> "By modifying a sprite's matrix, you can modify the sprite's location so that it
-> appears to **move in a smooth path on the screen**." そして
-> "**Translation-only matrices provide the best performance.**"
->
-> {.definition title="モディファイア トラック" pause scroll}
-> 行列をサンプルとして持つトラックが、別のトラックへ毎フレーム行列を送る仕組み。
-> "This data can be sent to a video track to cause it to **move and resize as it plays**."
->
-> {.remark pause up}
-> 画面の中を動き回る映像、という使い方が実在しました。
-> 平行移動は死んだ仕様ではなく、**使われなくなった仕様**です。
->
-> {pause up}
->
-> ## なぜ回転だけが生き残ったのか
->
-> いま流通している MP4 は、映像 1 本と音声 1 本。
-> 映像は画面いっぱいに引き伸ばして表示されるので、**どこに置くかを決める必要がありません**。
->
-> {pause scroll}
-> 一方でスマートフォンが縦でも横でも撮れるようになり、**回転だけ**は必要になりました。
-> センサーの向きは固定なので、撮影時の姿勢を行列で伝えるしかありません。
->
-> {.block title="実装がそれを裏づけている" pause scroll}
-> FFmpeg の `av_display_rotation_get` が読むのは配列の 0, 1, 3, 4 番目、
-> つまり $a\ b\ c\ d$ だけ。対になる `av_display_rotation_set` は
-> **残る $u\ v\ t_x\ t_y$ を 0 で潰し**、$w$ にだけ 1.0 を書きます。
-> API の側に平行移動を書く手段がありません。
->
-> {.block title="裏づけの出どころ" pause up}
-> > - Apple, *QuickTime File Format Specification*（2001-03-01 版, 無償）
-> >   Matrices / Track header atom / Sprite properties / Modifier tracks の各項
-> > - FFmpeg `libavutil/display.c` の `av_display_rotation_get` / `av_display_rotation_set`
-> >   <https://ffmpeg.org/doxygen/trunk/display_8c_source.html>
-> > - 「効かない」ことの確認は手元の実測。仕様側に「無視してよい」とは書かれていない
->
-> {.remark pause scroll}
-> 仕様が想定した使われ方と、実際に流通した使われ方がずれた結果です。
-> 箱の中には、使われないまま残っている機能がまだあります。
+----
+{.aside-label}
+余談
+
+## 平行移動はどこへ行った
+
+$t_x$ と $t_y$ を書き換えても、画は 1 ピクセルも動きません。
+ffmpeg もブラウザも、値を読んだうえで捨てています。
+
+{pause scroll}
+じゃあなぜ仕様にあるのか。祖先の QuickTime の仕様書に、用途が書いてありました。
+
+{.definition title="QuickTime File Format Specification, Matrices" pause scroll}
+"QuickTime files use matrices to describe spatial information about **many objects**,
+such as tracks within a movie."
+
+{pause scroll}
+`tkhd` の他のフィールドも、同じ方向を向いています。
+
+- **layer** … "this track's **spatial priority** in its movie"。重ね順
+- **alternate group** … 互いに代替となるトラックの組
+- `matt` … トラックの画像をブレンドする box
+- `clip` … クリッピング領域を指定する box
+
+{.remark pause up}
+字幕を右下に置く、小窓を重ねる、といった 2D 合成をやるつもりだったようです。
+そうなると、各トラックを「どこに」置くかを決める必要があります。
+
+{pause up}
+
+## QuickTime では使われていた
+
+同じ仕様書に、平行移動を使う機能が 2 つ載っています。
+
+{.definition title="スプライト" pause scroll}
+"By modifying a sprite's matrix, you can modify the sprite's location so that it
+appears to **move in a smooth path on the screen**." そして
+"**Translation-only matrices provide the best performance.**"
+
+{.definition title="モディファイア トラック" pause scroll}
+行列をサンプルとして持つトラックが、別のトラックへ毎フレーム行列を送る仕組み。
+"This data can be sent to a video track to cause it to **move and resize as it plays**."
+
+{.remark pause up}
+画面の中を動き回る映像、という使い方が実際にあったわけです。
+
+{pause up}
+
+## なぜ回転だけ残ったのか
+
+いま流通している MP4 は、だいたい映像 1 本と音声 1 本。
+映像は画面いっぱいに表示されるので、どこに置くかを決める必要がありません。
+
+{pause scroll}
+一方でスマートフォンが縦でも横でも撮れるようになり、**回転だけ**は必要になりました。
+センサーの向きは固定なので、撮影時の姿勢を行列で伝えるわけです。
+
+{.block title="FFmpeg の実装" pause scroll}
+`av_display_rotation_get` が読むのは配列の 0, 1, 3, 4 番目、つまり $a\ b\ c\ d$ だけ。
+対になる `av_display_rotation_set` は、残る $u\ v\ t_x\ t_y$ を 0 で潰し、$w$ にだけ 1.0 を書きます。
+そもそも平行移動を書く手段がありません。
+
+{.block title="出典" pause up}
+> - Apple, *QuickTime File Format Specification*（2001-03-01 版, 無償）
+>   Matrices / Track header atom / Sprite properties / Modifier tracks の各項
+> - FFmpeg `libavutil/display.c` の `av_display_rotation_get` / `av_display_rotation_set`
+>   <https://ffmpeg.org/doxygen/trunk/display_8c_source.html>
+> - 「効かない」のは手元での実測。仕様側に「無視してよい」とは書かれていない
+
+----
 
 {step}
 
@@ -225,8 +222,8 @@ $\theta$ 回転は $a = \cos\theta,\ b = \sin\theta,\ c = -\sin\theta,\ d = \cos
 | 180° | -1 | 0 | 0 | -1 |
 
 {pause scroll}
-180° を検算すると $x' = -x$, $y' = -y$。原点を中心に点対称、つまり半回転です。
+180° で計算すると $x' = -x$, $y' = -y$。原点を中心に点対称、つまり半回転です。
 
 {.block pause scroll}
-さきほどの問いの答え。**$a$ と $d$ を $-1.0$ にする**。
-16.16 の $-1.0$ は `0xFFFF0000` なので、書き換えるのは `0001 0000` が並んだ 2 箇所です。
+というわけで、さっきの問いの答えは **$a$ と $d$ を $-1.0$ にする**。
+16.16 の $-1.0$ は `0xFFFF0000` なので、`0001 0000` が並んだ 2 箇所を書き換えます。

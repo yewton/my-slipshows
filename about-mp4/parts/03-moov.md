@@ -49,31 +49,31 @@ moov  movie                 ムービー全体
 
 ## サンプルとチャンク
 
-`stbl` の 5 つの表が何を数えているのか、先に決めておきます。
+`stbl` の表に出てくる用語を、先に整理しておきます。
 
 {.definition title="サンプル" pause scroll}
 トラックが**時間順に持つデータの 1 要素**。映像なら 1 フレーム、音声なら一定量の波形です。
 `mdat` の中身は、このサンプルが並んだものです。
-（コマンド例に出てくるファイル名の `sample.mp4` とは関係ありません）
 
 {.definition title="チャンク" pause scroll}
 連続するサンプルをまとめた置き場所の単位。1 つのチャンクに 1 個以上のサンプルが入ります。
 
 {.remark pause scroll}
-このファイルは 5 秒 30fps なのでサンプルは **150 個**。
-それが全部 **1 つのチャンク**に入っているので、`stco` のエントリは 1 つだけです。
+> このファイルは 5 秒 30fps なので、サンプルは **150 個**。
+>
+> それが全部 **1 つのチャンク**に入っているので、`stco` のエントリは 1 つだけです。
 
 {.block pause scroll}
 `stco` が持つのは**チャンクの位置**だけ。
-その中の何番目がどのサンプルかは、`stsc` と `stsz` が引き受けます。
+その中のどこにどのサンプルがあるかは、`stsc` と `stsz` を見て辿ります。
 
 {pause up}
 
-## ツールで同じものを見る
+## ツールで見る
 
 {#tool-dump}
 ```text
-$ mp4dump sample.mp4
+$ mp4dump 00-original.mp4
 [ftyp] size=8+24
   major_brand = isom
   ...
@@ -93,19 +93,18 @@ $ mp4dump sample.mp4
 {pause up=tool-dump}
 
 {.remark}
-`xxd` で数えた `mdat` の 23,939 バイトがそのまま出ています。
-`tkhd` の `flags=3` も覚えておいてください。
-トラックを消すデモで、この 3 を書き換えます。
+> `xxd` で数えた `mdat` の 23,939 バイトが、そのまま出ていますね。
+>
+> `tkhd` の `flags=3` は、後でトラックを無効にするときに使います。
 
 {pause up}
 
 ## 今日使うツール
 
-特別なものは要りません。この資料に出てくるコマンドは以下だけです。
+どれも手に入れやすいものばかりです。
 
 {.definition title="バイト列を見る・比べる" pause scroll}
-`xxd`（16 進ダンプ）、`cmp -l`（違うバイトを列挙）、`diff`。
-どれも標準的な環境に入っています。
+`xxd`（16 進ダンプ）、`cmp --verbose`（違うバイトを列挙）、`diff`。
 
 {.definition title="箱の構造を読む" pause scroll}
 `mp4dump`（Bento4）。box を入れ子のまま表示します。
@@ -117,7 +116,7 @@ $ mp4dump sample.mp4
 
 {.remark pause scroll}
 書き換え自体は、バイナリエディタでも `head` / `printf` / `tail` でもできます。
-この資料の素材は Python で box を辿って書き換えました。
+この資料のデモ素材は、Python で box を辿って書き換えて作りました。
 
 {.block title="手元で試すなら" pause scroll}
 > - **ImHex** + `mp4.hexpat` … box 構造を色分けして見せるバイナリエディタ

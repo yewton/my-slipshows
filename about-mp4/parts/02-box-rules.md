@@ -26,7 +26,7 @@
 {pause scroll}
 ```text
 $ ffmpeg -f lavfi -i testsrc=size=320x240:rate=30:duration=5 \
-         -c:v libx264 -pix_fmt yuv420p sample.mp4
+         -c:v libx264 -pix_fmt yuv420p 00-original.mp4
 ```
 
 {.definition title="testsrc" pause scroll}
