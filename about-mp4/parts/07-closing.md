@@ -25,9 +25,7 @@
 > - RFC 8216（HTTP Live Streaming）— <https://www.rfc-editor.org/rfc/rfc8216>
 > - 一次規格は ISO/IEC 14496-12（有償）。本資料は引用しておらず、上記と実ファイル検証に基づく
 
-{pause up}
-
-{.block title="実装 / ツール"}
+{.block title="実装 / ツール" pause scroll}
 > - mp4box.js — <https://github.com/gpac/mp4box.js> (BSD-3-Clause)
 > - Bento4（`mp4dump` / `mp4fragment` / `mp4encrypt`）— <https://github.com/axiomatic-systems/Bento4>
 > - FFmpeg `libavformat/mov.c`, `libavutil/display.c`
@@ -35,9 +33,7 @@
 > - ImHex + `mp4.hexpat` — <https://github.com/WerWolv/ImHex-Patterns>
 > - MP4Box.js Box Viewer — <https://gpac.github.io/mp4box.js/test/filereader.html>
 
-{pause up}
-
-{.block title="デモ素材"}
+{.block title="デモ素材" pause scroll}
 > - 冒頭：*Big Buck Bunny* © 2008 Blender Foundation, CC BY 3.0
 >   <https://peach.blender.org> の 320x180 版から 5 秒を切り出して使用
 > - 2 章以降：`ffmpeg -f lavfi -i testsrc` で生成

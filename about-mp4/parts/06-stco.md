@@ -113,14 +113,28 @@ $ diff --unified=1 --label 00-original.mp4 --label 05-broken.mp4 <(xxd -l 64 00-
 
 {pause up}
 
-## faststart
+## mdat の前に置きたいもの
 
+壊れる理由は分かりました。では `mdat` より前には何も足さなければいいかというと、
+実は**前に置きたいもの**がよくあります。代表が `moov` そのものです。
+
+{pause scroll}
 エンコードが終わるまで索引は確定しないので、`moov` はファイル末尾に置かれることがよくあります。
+今日のファイルも `ftyp`, `free`, `mdat`, `moov` の順で、`moov` は最後でした。
+
+{pause scroll}
 ところがストリーミングでは、**再生を始める前に索引が要ります**。
 末尾にあると、全部ダウンロードするまで再生が始まりません。
 
-{pause scroll}
-そこで、`moov` を先頭へ移すオプションが用意されています。
+{.block pause scroll}
+`moov` を `mdat` の前へ移したい。でも移せば `mdat` の位置がずれるので、`stco` の書き直しが要ります。
+さっき壊したのと同じ状況です。
+
+{pause up}
+
+## faststart
+
+`moov` の移動を、`stco` の書き直しまで込みでやってくれるのが ffmpeg の faststart です。
 
 {.definition title="-movflags" pause scroll}
 ffmpeg の MP4 出力（mov / mp4 / ismv マルチプレクサ）に渡す、書き出し方の指定です。
