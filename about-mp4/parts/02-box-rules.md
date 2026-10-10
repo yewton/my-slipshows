@@ -10,7 +10,7 @@
 
 {pause scroll}
 - `size` は **自分自身を含めた** 全体のバイト数（ビッグエンディアン）
-- `type` は ASCII 4 文字。`ftyp`, `moov`, `mdat` など
+- `type` は ASCII 4 文字。`ftyp`（file type）, `moov`, `mdat` など
 - `payload` の中身は type ごとに違う。**box が入れ子になっていることも多い**
 
 {.block pause scroll}
@@ -80,7 +80,7 @@ $ xxd -R always -l 64 00-original.mp4 | ansi2html -n | pbcopy
 - **compatible_brands** … 「これとしても読める」の列挙。ここでは 4 つ
 
 {.remark pause scroll}
-`iso2` は 2004 年版の ISO ファイル形式、`avc1` は H.264（AVC）の拡張、`mp41` は MP4 version 1。
+`iso2` は 2004 年版の ISO ファイル形式、`avc1` は H.264（AVC: Advanced Video Coding）の拡張、`mp41` は MP4 version 1。
 つまり「容れ物は ISO で、中身は H.264」という自己申告です。ブランドの一覧は MP4RA が公開しています。
 
 {.block pause scroll}
@@ -108,17 +108,15 @@ ffmpeg は `ftyp` の直後に空の `free` を 1 つ書きます。
 
 ```text
 0000 5d8b 6d64 6174           size = 23,947, type = 'mdat'
-0000 02ae                     ← payload の先頭 4 バイト
-0605 ffff aadc 45e9 ...
+0000 02ae 0605 ffff ...       ← payload（映像データ）
 ```
 
 {pause scroll}
-ファイル全体の **9 割**がこの箱で、中身は H.264 の生データです。
-ただし先頭の `0000 02ae` は映像ではありません。**686 という長さ**です。
+ファイル全体の **9 割**がこの箱で、中身は H.264 で圧縮された映像データです。
 
 {.remark pause scroll}
-`mdat` は「長さ + データ」の繰り返しでできています。
-なぜそうなっているか、そしてこれが何を引き起こすかは、後ほど。
+`mdat` の中にも細かい構造がありますが、今日の本編では気にしなくて大丈夫です。
+気になる人は Appendix A へどうぞ。
 
 {pause up}
 
@@ -143,34 +141,3 @@ type の直後に 8 バイトの `extended size` が続く。4GB を超える bo
 
 {pause scroll}
 [mp4box.js の boxes 配下](https://github.com/gpac/mp4box.js/tree/v2.4.1/src/boxes) を見ると、各 type で version や flags がどういう意味を持つか、確認し易いです。
-
-{pause scroll}
----
-### mdhd の例
-
-`version` は、 duration などの bit 長に影響。
-
-```ts
-    if (this.version === 1) {
-      this.creation_time = stream.readUint64();
-      this.modification_time = stream.readUint64();
-      this.timescale = stream.readUint32();
-      this.duration = stream.readUint64();
-    } else {
-      this.creation_time = stream.readUint32();
-      this.modification_time = stream.readUint32();
-      this.timescale = stream.readUint32();
-      this.duration = stream.readUint32();
-    }
-```
-
----
-
-{pause scroll}
----
-`flags` は未使用。
-
-```ts
-    this.flags = 0;
-```
----

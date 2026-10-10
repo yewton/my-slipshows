@@ -99,7 +99,7 @@ $ diff --unified=3 --label before.mp4 --label after.mp4 <(xxd intro-upside-slow.
 {.remark pause scroll}
 > 上の hunk が向き、下の hunk が速さの差分です。
 >
-> 右側に見えている `tkhd`, `mdhd` というのが、構造を表すキーワードです。
+> 右側に見えている `tkhd`（track header）, `mdhd`（media header）というのが、構造を表すキーワードです。
 
 {pause scroll}
 ---
@@ -113,7 +113,7 @@ $ xxd intro-upside-slow.mp4 | head --lines 5
 00000040: b796 2cd8 20d9 23ee ef78 3236 3420 2d20  ..,. .#..x264 -
 ```
 
-先頭の方には `mdat`と呼ばれている部分があり、これが実際の映像データです。
+先頭の方には `mdat`（media data）と呼ばれている部分があり、これが実際の映像データです。
 
 ここは **1 バイトも変わっていません**。
 
@@ -145,7 +145,7 @@ $ xxd intro-upside-slow.mp4 | head --lines 5
 
 {include src=parts/04-tkhd-matrix.md}
 
-{include src=parts/05-demos.md}
+{include src=parts/05-mdhd.md}
 
 {include src=parts/06-stco.md}
 

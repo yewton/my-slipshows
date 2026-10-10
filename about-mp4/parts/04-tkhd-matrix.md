@@ -131,9 +131,103 @@ xxd の 1 行がちょうど 4 個ぶんなので、3 行に収まります。
 >
 > そこで座標に常に `1` をくっつけておくと、$t_x \times 1 = t_x$ として足し込めます（同次座標）。
 
-{pause}
+{pause up}
 
-ところで、この平行移動、**手元のどのプレイヤーでも効きませんでした**。
+## 回転行列
+
+$\theta$ 回転は $a = \cos\theta,\ b = \sin\theta,\ c = -\sin\theta,\ d = \cos\theta$。
+
+| 角度 | a | b | c | d |
+| --- | --- | --- | --- | --- |
+| 0° | 1 | 0 | 0 | 1 |
+| 90° | 0 | 1 | -1 | 0 |
+| 180° | -1 | 0 | 0 | -1 |
+
+{pause scroll}
+180° で計算すると $x' = -x$, $y' = -y$。原点を中心に点対称、つまり半回転です。
+
+{.block pause scroll}
+というわけで、さっきの問いの答えは **$a$ と $d$ を $-1.0$ にする**。
+16.16 の $-1.0$ は `0xFFFF0000` なので、`0001 0000` が並んだ 2 箇所を書き換えます。
+
+{pause up}
+
+## 回転させる
+
+```text
+単位行列 (無変換):
+00010000 00000000 00000000
+00000000 00010000 00000000
+00000000 00000000 40000000
+
+180 度回転:
+FFFF0000 00000000 00000000     ← a: +1.0 → -1.0
+00000000 FFFF0000 00000000     ← d: +1.0 → -1.0
+00000000 00000000 40000000
+```
+
+{pause scroll=demo2 play-media=demo2}
+
+![](../demo/02-rotate.mp4){video #demo2 width=40%}
+
+{pause scroll}
+```text
+$ cmp --verbose 00-original.mp4 02-rotate.mp4 | wc -l
+4
+```
+
+{.remark pause scroll}
+> `0001 0000` → `FFFF 0000` なので、変わるのは `a` と `d` で 2 バイトずつ、計 4 バイトです。
+>
+> `a` と `d` は 16 バイト離れているので、xxd では別々の行に出ます。冒頭の diff が 2 行だったのはこのためです。
+
+{.remark pause scroll}
+90 度ではなく 180 度にしたのは、90 度だと縦横の入れ替えが絡んでプレイヤーによって挙動が割れるからです。
+180 度なら寸法が変わらないので、どのプレイヤーでも同じ結果になります。
+
+{pause up}
+
+## ffprobe で確認
+
+```text
+$ ffprobe -hide_banner 02-rotate.mp4 2>&1 | grep 'Display Matrix'
+      Display Matrix: rotation of -180.00 degrees
+```
+
+{.remark pause scroll}
+書き換えた行列が、ちゃんと回転として解釈されています。
+
+{pause up}
+
+## FFmpeg で答え合わせ
+
+`-display_rotation` を付けて `-c copy` で通すと、映像には触れずに行列だけが書き直されます。
+これを正解として、手で書き換えたものと突き合わせてみます。
+
+{pause scroll}
+```diff
+$ ffmpeg -display_rotation 180 -i 00-original.mp4 -c copy ref.mp4
+$ diff --unified=1 --label 02-rotate.mp4 --label ref.mp4 <(xxd 02-rotate.mp4) <(xxd ref.mp4)
+--- 02-rotate.mp4
++++ ref.mp4
+@@ -1536,3 +1536,3 @@
+ 00005ff0: 0000 0001 0000 0001 0000 0014 6274 7274  ............btrt
+-00006000: 0000 0000 0000 959e 0000 0000 0000 0018  ................
++00006000: 0000 0000 0000 959e 0000 959e 0000 0018  ................
+ 00006010: 7374 7473 0000 0000 0000 0001 0000 0096  stts............
+```
+
+{.remark pause scroll}
+> 違うのは `btrt`（bit rate。ビットレートの箱）の avgBitrate だけ。
+> 再多重化のときに FFmpeg が埋めた値で、回転とは関係ありません。
+>
+> **回転については、手で書き換えたものと完全に一致しました。**
+
+{pause up}
+
+## ところで
+
+さっき出てきた平行移動の $t_x$ と $t_y$ ですが、実際には**手元のどのプレイヤーでも効果がありませんでした**。
 
 {slip .aside pause}
 ----
@@ -153,14 +247,14 @@ ffmpeg もブラウザも、値を読んだうえで捨てています。
 such as tracks within a movie."
 
 {pause scroll}
-`tkhd` の他のフィールドも、同じ方向を向いています。
+`tkhd` の他のフィールドにも、同じような意図が見えます:
 
 - **layer** … "this track's **spatial priority** in its movie"。重ね順
 - **alternate group** … 互いに代替となるトラックの組
-- `matt` … トラックの画像をブレンドする box
+- `matt`（matte）… トラックの画像をブレンドする box
 - `clip` … クリッピング領域を指定する box
 
-{.remark pause up}
+{.remark pause scroll}
 字幕を右下に置く、小窓を重ねる、といった 2D 合成をやるつもりだったようです。
 そうなると、各トラックを「どこに」置くかを決める必要があります。
 
@@ -191,7 +285,7 @@ appears to **move in a smooth path on the screen**." そして
 
 {pause scroll}
 一方でスマートフォンが縦でも横でも撮れるようになり、**回転だけ**は必要になりました。
-センサーの向きは固定なので、撮影時の姿勢を行列で伝えるわけです。
+センサーの向きは固定なので、撮影時の向きを行列で伝えるわけです。
 
 {.block title="FFmpeg の実装" pause scroll}
 `av_display_rotation_get` が読むのは配列の 0, 1, 3, 4 番目、つまり $a\ b\ c\ d$ だけ。
@@ -203,7 +297,7 @@ appears to **move in a smooth path on the screen**." そして
 >   Matrices / Track header atom / Sprite properties / Modifier tracks の各項
 > - FFmpeg `libavutil/display.c` の `av_display_rotation_get` / `av_display_rotation_set`
 >   <https://ffmpeg.org/doxygen/trunk/display_8c_source.html>
-> - 「効かない」のは手元での実測。仕様側に「無視してよい」とは書かれていない
+> - 「動かない」のは実装上の都合。仕様側に「無視してよい」とは書かれていない
 
 ----
 
@@ -211,19 +305,27 @@ appears to **move in a smooth path on the screen**." そして
 
 {pause up}
 
-## 回転行列
+## もう一つ、効かないもの
 
-$\theta$ 回転は $a = \cos\theta,\ b = \sin\theta,\ c = -\sin\theta,\ d = \cos\theta$。
+`tkhd` の flags を書き換えて、トラックを無効にしてみます。
 
-| 角度 | a | b | c | d |
-| --- | --- | --- | --- | --- |
-| 0° | 1 | 0 | 0 | 1 |
-| 90° | 0 | 1 | -1 | 0 |
-| 180° | -1 | 0 | 0 | -1 |
+```text
+tkhd は FullBox。その先頭 flags(3) の下位ビット:
+0x0001  track enabled      このトラックを再生するか
+0x0002  track in movie     本編で使うか
+0x0004  track in preview   プレビューで使うか
+0x0008  track in poster    ポスターで使うか
+```
+
+{.remark pause scroll}
+preview は「3〜5 秒の短い紹介」、poster は「代表の 1 コマ」。今はまず使われません。
 
 {pause scroll}
-180° で計算すると $x' = -x$, $y' = -y$。原点を中心に点対称、つまり半回転です。
+```text
+変更前:  00 00 00 03      ← enabled + in movie
+変更後:  00 00 00 02      ← enabled を落とす
+```
 
-{.block pause scroll}
-というわけで、さっきの問いの答えは **$a$ と $d$ を $-1.0$ にする**。
-16.16 の $-1.0$ は `0xFFFF0000` なので、`0001 0000` が並んだ 2 箇所を書き換えます。
+{.remark pause scroll}
+`mp4dump` は `enabled = 0` と読みますが、**ffmpeg も Chrome も無視して再生しました**。
+さっきの平行移動と同じで、仕様にあっても実装が見ていなければ効きません。

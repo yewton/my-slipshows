@@ -44,6 +44,7 @@ moov  movie                 ムービー全体
 
 {.remark pause scroll}
 今回は ★ の 3 つだけ扱います。
+`tkhd` と `mdhd` は、冒頭で書き換えた 2 つ。`stco` は、書き換え方を間違えると壊れる理由を説明するのに使います。
 
 {pause up}
 
@@ -83,23 +84,23 @@ $ mp4dump 00-original.mp4
   [mvhd] size=12+96
     timescale = 1000
     duration = 5000
+    duration(ms) = 5000
   [trak] size=8+2397
     [tkhd] size=12+80, flags=3
       enabled = 1
-      width = 320.000000
-      height = 240.000000
+      id = 1
+      duration = 5000
+      ...
 ```
 
-{pause up=tool-dump}
-
-{.remark}
-> `xxd` で数えた `mdat` の 23,939 バイトが、そのまま出ていますね。
+{.remark pause scroll}
+> `xxd` で見た `mdat` の 8+23,939 = 23,947 バイトがここに出ています。
 >
 > `tkhd` の `flags=3` は、後でトラックを無効にするときに使います。
 
 {pause up}
 
-## 今日使うツール
+## 使うツール
 
 どれも手に入れやすいものばかりです。
 
@@ -115,10 +116,10 @@ $ mp4dump 00-original.mp4
 再多重化（remux）は、映像データに触らず箱の詰め方だけを変えること。`-c copy` がそれです。
 
 {.remark pause scroll}
-書き換え自体は、バイナリエディタでも `head` / `printf` / `tail` でもできます。
+書き換え自体は、バイナリエディタでも Emacs でもできます。
 この資料のデモ素材は、Python で box を辿って書き換えて作りました。
 
 {.block title="手元で試すなら" pause scroll}
-> - **ImHex** + `mp4.hexpat` … box 構造を色分けして見せるバイナリエディタ
-> - **MP4Box.js Box Viewer** … ブラウザで完結。ファイルは端末から出ません
-> - **MP4Box -info**（GPAC）… `mp4dump` と同じ用途の別実装
+> - **[ImHex](https://imhex.werwolv.net/)** + `mp4.hexpat` … box 構造を色分けして見せるバイナリエディタ
+> - **[MP4Box.js - JavaScript MP4 Reader/Fragmenter](https://gpac.github.io/mp4box.js/test/filereader.html)** … ブラウザ、ローカル完結
+> - **MP4Box -info**（[GPAC](https://wiki.gpac.io/MP4Box/MP4Box/)）… `mp4dump` と同じ用途の別実装

@@ -3,6 +3,52 @@
 {#part6-title}
 # 6. stco と絶対オフセット
 
+## サイズを変えて壊す
+
+ここまでは全部**同じサイズ**のままの書き換えでした。ではサイズを変えるとどうなるか。
+
+{pause scroll}
+中身のない `free` box を 1 つ、`mdat` の直前に挿し込んでみます。
+box のルールには何も違反していません。
+
+```text
+$ head --bytes=40 00-original.mp4           > 05-broken.mp4
+$ printf '\x00\x00\x00\x08free'            >> 05-broken.mp4
+$ tail --bytes=+41 00-original.mp4         >> 05-broken.mp4
+```
+
+{pause up}
+box としては正しいので、パーサーは何も文句を言いません。
+
+```text
+$ mp4dump 05-broken.mp4
+[ftyp] size=8+24
+[free] size=8+0
+[free] size=8+0        ← 挿し込んだ box
+[mdat] size=8+23939
+[moov] size=8+2611
+```
+
+{pause up=demo5}
+![](../demo/05-broken.mp4){video controls #demo5 width=38%}
+
+{pause scroll}
+でも再生できません。読み飛ばされるはずの箱を足しただけなのに。
+
+{pause scroll}
+```text
+$ ffmpeg -i 05-broken.mp4 -f null -
+[h264 @ 0x...] Invalid NAL unit size (23947 > 3898).
+```
+
+{.remark pause scroll}
+エラーに出ている `23947` という数字、どこかで見覚えがありませんか？
+（NAL unit は H.264 のデータの単位です。中身は Appendix A で扱うので、ここでは数字の方に注目してください）
+
+{pause up}
+
+## stco
+
 {.definition title="stco（Chunk Offset Box）" pause scroll}
 各チャンクが**ファイル先頭から何バイト目にあるか**を、絶対値で並べた表。
 「何バイト後ろ」ではなく「何バイト目」なのがポイントです。
@@ -23,7 +69,7 @@ $ mp4dump --verbosity 2 00-original.mp4
 
 ## 前に足すとずれる
 
-さっき壊したファイルでは、`free` box を 8 バイト挿しただけで、
+壊したファイルでは、`free` box を 8 バイト追加しただけで、
 `stco` は 48 のまま、実際のデータは 56 バイト目へ動いていました。
 
 {.block pause scroll}
@@ -55,51 +101,15 @@ $ diff --unified=1 --label 00-original.mp4 --label 05-broken.mp4 <(xxd -l 64 00-
 {.remark pause scroll}
 > 48 バイト目（`0x30`）にあるのは `0000 5d8b`。**`mdat` の size フィールド**です。
 >
-> 本来そこにあるはずだった `0000 02ae` は、8 バイト後ろへずれています。
-
-{pause up}
-
-## NAL unit
-
-`mdat` は「長さ + データ」の繰り返しでできている、と言いました。この「データ」が NAL unit です。
-
-{.definition title="NAL unit — Network Abstraction Layer unit" pause scroll}
-H.264 は、圧縮そのものを受け持つ層（**VCL**）と、それを運ぶための包み（**NAL**）に
-分けて設計されています。同じ映像データを MP4 でも RTP でも運べるのは、この分離のおかげです。
-
-{.remark pause scroll}
-> 生の H.264 は `00 00 01` というスタートコードを探して切れ目を見つけますが、
-> **MP4 では長さを前に置きます**。
->
-> たとえば `stsz` が「1 個目のサンプルは 3,902 バイト」と言い、
-> その中を長さで辿ると 690 + 3,212 の NAL 2 つに分かれる、という具合です。
-
-{.remark pause scroll}
-長さフィールドの幅は `avcC`（`stsd` の中にある、H.264 の設定を書いた箱）の
-`lengthSizeMinusOne` が決めます。このファイルでは 4 バイトです。
-
-{pause up}
-
-## 長さだと思って読まれる
-
-```text
-正しい先頭:  0000 02ae | 06 05 ff ff ...
-             ↑ 686     ↑ 1 個目の NAL（686 バイト）
-
-壊れた先頭:  0000 5d8b | 6d 64 61 74 ...
-             ↑ 23947   ↑ "mdat" の 4 文字を中身だと思って読む
-```
+> 本来の映像データの先頭（`0000 02ae 0605 ...`）は、8 バイト後ろへずれています。
 
 {.block pause scroll}
-```text
-$ ffmpeg -i 05-broken.mp4 -f null -
-[h264 @ 0x...] Invalid NAL unit size (23947 > 3898).
-```
-エラーに出ている **23947 は `mdat` の size** そのものです。
+エラーの **23947 は `mdat` の size** そのもの。
+箱のヘッダを、映像データの一部だと思って読んでしまったわけです。
 
 {.remark pause scroll}
-> `free` はパーサーにとっては読み飛ばせる箱ですが、
-> `stco` はそんなことお構いなしに、絶対位置でデータを指していたわけです。
+`free` はパーサーにとっては読み飛ばせる箱ですが、
+`stco` はそんなことお構いなしに、絶対位置でデータを指していたんですね。
 
 {pause up}
 
@@ -180,13 +190,13 @@ fast.mp4             2667      ← 2,619 バイトぶん後ろへ
 > ライブ配信や DASH、HLS で使われているのがこの形式です。
 
 {.remark pause scroll}
-実際の box 構造は、おまけで見ます。
+実際の box 構造は Appendix B で見ます。
 
 {.block title="fragmented MP4 を無償で読むには" pause up}
 > 定義そのものは ISO/IEC 14496-12（有償）にありますが、構造の要件は
 > 配信側の規格が無償で書いています。
 >
 > - W3C, *ISO BMFF Byte Stream Format*（Group Note, 2024）— <https://www.w3.org/TR/mse-byte-stream-format-isobmff/>
->   初期化セグメントは `ftyp` + `moov`（`mvex` 必須）、メディアセグメントは `moof` + `mdat`
+>   初期化セグメントは `ftyp` + `moov`（`mvex` = movie extends 必須）、メディアセグメントは `moof` + `mdat`
 > - RFC 8216 §3.3 *Fragmented MPEG-4* — <https://www.rfc-editor.org/rfc/rfc8216#section-3.3>
-> - MP4RA — `moof` = "movie fragment", `traf` = "track fragment", `trun` = "track fragment run"
+> - MP4RA — `moof` = "movie fragment", `traf` = "Track fragment", `trun` = "track fragment run"
