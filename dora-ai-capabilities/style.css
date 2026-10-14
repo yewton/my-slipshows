@@ -1,0 +1,182 @@
+/* DORA AI Capabilities デッキ固有のスタイル。
+   本編は 10 分の LT で文字量を絞り、Appendix は読む資料として表を多用する。 */
+
+/* 表題はデッキの最初の要素で、開いた時点（ステップ 0）から見えている必要がある。
+   `{pause center}` で中央に寄せると表題が pause の後ろに入りステップ 0 が空白になるため、
+   上の余白で画面の中ほどに置く。slip の中では vh が使えないので em で指定する。 */
+.cover {
+  margin-top: 4.5em;
+}
+
+/* 表題の下の副題 */
+.subtitle {
+  text-align: center;
+  font-size: 1.1em;
+  color: #555;
+  margin-top: 0.4em;
+}
+
+/* 既定テーマは表に罫線を持たないので付ける */
+table {
+  border-collapse: collapse;
+  margin: 0.5em 0;
+}
+
+th,
+td {
+  border: 1px solid #d4d4d4;
+  padding: 0.25em 0.6em;
+  vertical-align: top;
+  text-align: left;
+}
+
+th {
+  background: #f2f2f0;
+}
+
+/* 列や行の多い表。Appendix の表と、本編の対応表で使う */
+.tight {
+  font-size: 0.68em;
+  line-height: 1.45;
+}
+
+/* 本編の「AI は増幅器」の表 */
+.effects {
+  font-size: 0.85em;
+}
+
+/* 7 能力を 3 つの観点で並べる地図。3 列のカードにする */
+.map {
+  display: flex;
+  gap: 0.8em;
+  align-items: stretch;
+  margin: 0.6em 0;
+}
+
+.map > .map-col {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5em 0.8em;
+  background: #f7f8fa;
+  border: 1px solid #cfd6e0;
+  border-top: 6px solid #5b7fa8;
+  box-sizing: border-box;
+  font-size: 0.95em;
+}
+
+.map-head {
+  font-weight: 700;
+  font-size: 1.15em;
+  margin: 0 0 0.2em;
+}
+
+.map-q {
+  color: #555;
+  font-size: 0.85em;
+  margin: 0 0 0.4em;
+}
+
+.map ul {
+  margin: 0;
+  padding-left: 1.1em;
+}
+
+/* 本編「地図から見えること」の確認の問い */
+.questions {
+  font-size: 0.85em;
+}
+
+/* 共有するときの 3 点 */
+.three {
+  font-size: 1.05em;
+}
+
+/* 3 点の記入例。縦に 3 段の帯にする */
+.sample > .sample-row {
+  padding: 0.3em 0.8em;
+  margin: 0.3em 0;
+  background: #f7f8fa;
+  border-left: 6px solid #5b7fa8;
+  font-size: 0.85em;
+}
+
+.sample-row p {
+  margin: 0.15em 0;
+}
+
+/* Appendix の節番号ラベル */
+.appendix-label {
+  font-size: 0.7em;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: #8a7f66;
+  margin: 0;
+}
+
+/* ROI の連鎖を 1 行で見せる */
+.chain {
+  font-size: 0.85em;
+  padding: 0.5em 0.8em;
+  background: #f6f4ef;
+  border: 1px solid #c8bda4;
+}
+
+/* ワークシートの空欄行に記入できる高さを持たせる */
+.worksheet td {
+  height: 3em;
+}
+
+/* 本編で見せる表。Appendix の .tight より大きく、遠くからでも読める大きさにする */
+.mid {
+  font-size: 0.85em;
+  line-height: 1.45;
+}
+
+/* 本編で口頭でも触れる補足（想定読者、指標の注意など）。注記（.credit）より読める大きさにする */
+.note {
+  font-size: 0.75em;
+  color: #444;
+  border-left: 4px solid #c8bda4;
+  padding-left: 0.6em;
+}
+
+/* 本編「日々の活動を、地図に置く」。活動ごとのカードを 2x2 に並べ、1 枚ずつ出す */
+.acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6em;
+  margin: 0.4em 0;
+}
+
+.acts > .act {
+  flex: 1 1 45%;
+  min-width: 0;
+  padding: 0.3em 0.8em;
+  background: #f7f8fa;
+  border: 1px solid #cfd6e0;
+  border-left: 6px solid #5b7fa8;
+  box-sizing: border-box;
+  font-size: 0.95em;
+}
+
+.act p {
+  margin: 0.2em 0;
+}
+
+.act ul {
+  margin: 0.2em 0;
+  padding-left: 1.1em;
+}
+
+/* 地図の能力名は 1 行に置き、続く短い説明を次の行に小さく出す */
+.map li {
+  font-size: 0.85em;
+  color: #444;
+  margin-bottom: 0.3em;
+}
+
+.map li strong {
+  display: block;
+  font-size: 1.12em;
+  color: #111;
+}
